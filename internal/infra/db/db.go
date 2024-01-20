@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"github.com/Hamid-Rezaei/goMessenger/internal/domain/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -41,4 +42,12 @@ func CreateURI() string {
 
 	DSN := fmt.Sprintf("%s://%s:%s@%s:%s/%s", driver, username, password, host, port, db)
 	return DSN
+}
+
+func AutoMigrate(db *gorm.DB) {
+	if err := db.AutoMigrate(
+		new(model.User),
+	); err != nil {
+		log.Fatalf("failed to run migrations %v", err)
+	}
 }
