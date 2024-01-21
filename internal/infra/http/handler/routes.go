@@ -5,8 +5,8 @@ import (
 )
 
 func (h *Handler) Register(v1 *echo.Group) {
-	guestUsers := v1.Group("/users")
-	guestUsers.POST("", h.SignUp)
+	guestUsers := v1.Group("")
+	guestUsers.POST("/register", h.SignUp)
 	guestUsers.POST("/login", h.Login)
 
 	//user := v1.Group("/user", middleware.JWT(utils.GetSigningKey()))
