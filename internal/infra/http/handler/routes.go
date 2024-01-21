@@ -14,6 +14,6 @@ func (h *Handler) Register(v1 *echo.Group) {
 	user := v1.Group("/users", middleware.JWT(utils.GetSigningKey()))
 	user.GET("/:id", h.CurrentUser)
 	user.PATCH("/:id", h.UpdateUser)
-	user.GET("/:id", h.DeleteUser)
+	user.DELETE("/:id", h.DeleteUser)
 	user.GET("", h.SearchUser)
 }

@@ -76,10 +76,8 @@ func (ur *UserRepository) Delete(ctx context.Context, id uint) error {
 
 func (ur *UserRepository) SearchUser(_ context.Context, keyword string) (*model.User, error) {
 	var u model.User
-	if err := ur.db.Where("username LIKE ?", "%"+keyword+"%").First(&u).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
+	q := "%" + keyword + "%"
+	if err := ur.db.Where("lower(username) LIKE ?", q).First(&u).Error; err != nil {
 		return nil, err
 	}
 	return &u, nil
