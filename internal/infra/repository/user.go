@@ -62,3 +62,14 @@ func (ur *UserRepository) Update(ctx context.Context, user *model.User, id uint)
 
 	return tx.Commit().Error
 }
+
+func (ur *UserRepository) Delete(ctx context.Context, id uint) error {
+	tx := ur.db.WithContext(ctx).Begin()
+
+	if err := tx.Delete(&model.User{}, id).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit().Error
+}

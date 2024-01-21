@@ -156,6 +156,23 @@ func (h *Handler) UpdateUser(c echo.Context) error {
 
 func (h *Handler) DeleteUser(c echo.Context) error {
 
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		log.Printf("%v\n", err)
+		return echo.ErrBadRequest
+	}
+
+	userID := userIDFromToken(c)
+	if userID != uint(id) {
+		return c.JSON(http.StatusForbidden, "Access Forbidden!")
+	}
+
+	if err := h.userRepo.Delete(c.Request().Context(), uint(id)); err != nil {
+		log.Printf("%v\n", err)
+		return echo.ErrInternalServerError
+	}
+
+	return c.JSON(http.StatusOK, "User Was Deleted Successfully.")
 }
 
 func (h *Handler) SearchUser(c echo.Context) error {
