@@ -39,3 +39,48 @@ func (ur *UserRepository) GetByUsernamePhone(_ context.Context, username string,
 	}
 	return &u, nil
 }
+
+func (ur *UserRepository) GetUserByID(_ context.Context, id uint) (*model.User, error) {
+	var u model.User
+
+	if err := ur.db.First(&u, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &u, nil
+}
+
+func (ur *UserRepository) Update(ctx context.Context, user *model.User, id uint) error {
+	tx := ur.db.WithContext(ctx).Begin()
+
+	if err := tx.Model(&model.User{}).Where("id = ?", id).Updates(&user).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit().Error
+}
+
+func (ur *UserRepository) Delete(ctx context.Context, id uint) error {
+	tx := ur.db.WithContext(ctx).Begin()
+
+	if err := tx.Delete(&model.User{}, id).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit().Error
+}
+
+func (ur *UserRepository) SearchUser(_ context.Context, keyword string) (*model.User, error) {
+	var u model.User
+	if err := ur.db.Where("username LIKE ?", "%"+keyword+"%").First(&u).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &u, nil
+}
