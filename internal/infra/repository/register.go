@@ -11,4 +11,5 @@ type UserRepo interface {
 	GetUserByID(_ context.Context, id uint) (*model.User, error)
 	Update(ctx context.Context, user *model.User, id uint) error
 	Delete(ctx context.Context, id uint) error
+	SearchUser(_ context.Context, keyword string) (*model.User, error)
 }

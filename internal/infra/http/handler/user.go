@@ -176,7 +176,20 @@ func (h *Handler) DeleteUser(c echo.Context) error {
 }
 
 func (h *Handler) SearchUser(c echo.Context) error {
+	keyword := c.QueryParam("keyword")
 
+	// TODO: here must check jwt expiration
+
+	user, err := h.userRepo.SearchUser(c.Request().Context(), keyword)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return c.JSON(http.StatusNoContent, "User Not Found!")
+		}
+
+		return echo.ErrInternalServerError
+	}
+
+	return c.JSON(http.StatusOK, response.NewUserSearchResponse(user))
 }
 
 func userIDFromToken(c echo.Context) uint {
