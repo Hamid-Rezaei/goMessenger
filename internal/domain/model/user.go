@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"image"
 	"io"
 	"mime/multipart"
 	"os"
@@ -74,4 +75,19 @@ func (u *User) UploadImage(file *multipart.FileHeader) (string, error) {
 	}
 
 	return dest, nil
+}
+
+func (u *User) RetrieveImage(filePath string) (image.Image, error) {
+	f, err := os.Open(filePath)
+	if err != nil {
+		return nil, err
+	}
+	defer func(f *os.File) {
+		err := f.Close()
+		if err != nil {
+
+		}
+	}(f)
+	profile, _, err := image.Decode(f)
+	return profile, err
 }

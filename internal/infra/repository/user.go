@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"github.com/Hamid-Rezaei/goMessenger/internal/domain/model"
 	"gorm.io/gorm"
 )
@@ -26,4 +27,15 @@ func (ur *UserRepository) Create(ctx context.Context, model model.User) (uint, e
 	}
 
 	return user.ID, tx.Commit().Error
+}
+
+func (ur *UserRepository) GetByUsernamePhone(_ context.Context, username string, phone string) (*model.User, error) {
+	var u model.User
+	if err := ur.db.Where(&model.User{Phone: phone, Username: username}).First(&u).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &u, nil
 }
