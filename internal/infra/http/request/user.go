@@ -3,17 +3,16 @@ package request
 import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
-	"mime/multipart"
 )
 
 type UserRegisterRequest struct {
-	Firstname string                `json:"firstname" validate:"required"`
-	Lastname  string                `json:"lastname" validate:"required"`
-	Username  string                `json:"username" validate:"required"`
-	Password  string                `json:"password" validate:"required"`
-	Phone     string                `json:"phone" validate:"required"`
-	Image     *multipart.FileHeader `json:"-"`
-	Bio       string                `json:"bio"`
+	Firstname string `json:"firstname" validate:"required"`
+	Lastname  string `json:"lastname" validate:"required"`
+	Username  string `json:"username" validate:"required"`
+	Password  string `json:"password" validate:"required"`
+	Phone     string `json:"phone" validate:"required"`
+	//Image     *multipart.FileHeader `json:"-"`
+	Bio string `json:"bio"`
 }
 
 type UserLoginRequest struct {

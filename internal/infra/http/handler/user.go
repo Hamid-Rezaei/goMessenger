@@ -31,11 +31,11 @@ func (h *Handler) SignUp(c echo.Context) error {
 	}
 	user.Password = hash
 
-	imagePath, err := user.UploadImage(req.Image)
-	if err != nil {
-		return err
-	}
-	user.Image = imagePath
+	//imagePath, err := user.UploadImage(req.Image)
+	//if err != nil {
+	//	return err
+	//}
+	//user.Image = imagePath
 	user.Username = req.Username
 	user.Firstname = req.Firstname
 	user.Lastname = req.Lastname
