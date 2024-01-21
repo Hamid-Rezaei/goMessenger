@@ -39,3 +39,15 @@ func (ur *UserRepository) GetByUsernamePhone(_ context.Context, username string,
 	}
 	return &u, nil
 }
+
+func (ur *UserRepository) GetUserByID(_ context.Context, id uint) (*model.User, error) {
+	var u model.User
+
+	if err := ur.db.First(&u, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &u, nil
+}
