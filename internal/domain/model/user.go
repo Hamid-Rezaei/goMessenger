@@ -2,8 +2,14 @@ package model
 
 import (
 	"errors"
+	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"io"
+	"mime/multipart"
+	"os"
+	"path/filepath"
+	"time"
 )
 
 type User struct {
@@ -28,4 +34,44 @@ func (u *User) HashPassword(plain string) (string, error) {
 func (u *User) CheckPassword(plain string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(plain))
 	return err == nil
+}
+
+func generateUniqueFilename(originalFilename string) string {
+	year := time.Now().Year()
+	return fmt.Sprintf("%d_user_image_%s", year, originalFilename)
+}
+
+func (u *User) UploadImage(file *multipart.FileHeader) (string, error) {
+
+	src, err := file.Open()
+	if err != nil {
+		return "", err
+	}
+	defer func(src multipart.File) {
+		err := src.Close()
+		if err != nil {
+
+		}
+	}(src)
+
+	filename := generateUniqueFilename(file.Filename)
+	dest := filepath.Join("upload", filename)
+
+	dst, err := os.Create(dest)
+	if err != nil {
+		return "", err
+	}
+	defer func(dst *os.File) {
+		err := dst.Close()
+		if err != nil {
+
+		}
+	}(dst)
+
+	_, err = io.Copy(dst, src)
+	if err != nil {
+		return "", err
+	}
+
+	return dest, nil
 }
