@@ -51,3 +51,14 @@ func (ur *UserRepository) GetUserByID(_ context.Context, id uint) (*model.User, 
 	}
 	return &u, nil
 }
+
+func (ur *UserRepository) Update(ctx context.Context, user *model.User, id uint) error {
+	tx := ur.db.WithContext(ctx).Begin()
+
+	if err := tx.Model(&model.User{}).Where("id = ?", id).Updates(&user).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit().Error
+}

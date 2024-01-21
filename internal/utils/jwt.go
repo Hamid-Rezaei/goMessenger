@@ -19,7 +19,7 @@ func GenerateJWT(id uint) string {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["id"] = id
-	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
+	claims["exp"] = time.Now().Add(time.Hour * 1).Unix()
 	t, _ := token.SignedString(GetSigningKey())
 	return t
 }
