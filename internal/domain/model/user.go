@@ -16,9 +16,9 @@ type User struct {
 	gorm.Model
 	Firstname string `json:"firstname"`
 	Lastname  string `json:"lastname"`
-	Username  string `validate:"required" gorm:"unique"`
+	Username  string `json:"username" gorm:"unique"`
 	Password  string `json:"password"`
-	Phone     string `validate:"required" gorm:"unique"`
+	Phone     string `json:"phone" gorm:"unique"`
 	Image     string `json:"image"`
 	Bio       string `json:"bio"`
 }
