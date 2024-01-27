@@ -8,7 +8,7 @@ import (
 
 type Chat struct {
 	gorm.Model
-	ID        uint64 `gorm:"primaryKey"`
-	People    []uint64
+	ID        uint `gorm:"primaryKey"`
+	People    []uint
 	CreatedAt time.Time `json:"created_at,omitempty"`
 }
