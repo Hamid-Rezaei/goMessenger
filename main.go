@@ -26,8 +26,9 @@ func main() {
 	v1 := r.Group("/api")
 
 	ur := repository.NewUserRepo(dbConnection)
+	cr := repository.NewContactRepo(dbConnection)
 
-	h := handler.NewHandler(ur)
+	h := handler.NewHandler(ur, cr)
 	h.Register(v1)
 
 	if err := r.Start("0.0.0.0:8080"); err != nil {
