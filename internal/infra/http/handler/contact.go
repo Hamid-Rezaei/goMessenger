@@ -23,7 +23,7 @@ func (h *Handler) GetContactsList(c echo.Context) error {
 	contacts, err := h.contactRepo.GetList(c.Request().Context(), uint(id))
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return c.JSON(http.StatusNoContent, "User Not Found!")
+			return c.JSON(http.StatusNoContent, "No Contact Found!")
 		}
 		return echo.ErrInternalServerError
 	}

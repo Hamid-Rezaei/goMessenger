@@ -21,3 +21,17 @@ type ContactRepo interface {
 	GetById(_ context.Context, user_id uint, contact_id uint) (*model.Contact, error)
 	Delete(ctx context.Context, user_id uint, contact_id uint) error
 }
+
+type ChatRepo interface {
+	Create(ctx context.Context, model model.Chat) (*model.Chat, error)
+	GetChatList(ctx context.Context, user_id uint) (*[]model.Chat, error)
+	GetChatById(ctx context.Context, chat_id uint) (*model.Chat, error)
+	GetChat(ctx context.Context, user_id uint, receiver_id uint) (*model.Chat, error)
+	Delete(ctx context.Context, chat_id uint) error
+}
+
+type MessageRepo interface {
+	GetMessage(ctx context.Context, chat_id uint, message_id uint) (*model.Message, error)
+	Delete(ctx context.Context, chat_id uint, message_id uint) error
+	GetMessagesOfAChat(ctx context.Context, chat_id uint) (*[]model.Message, error)
+}
