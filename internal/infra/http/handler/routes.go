@@ -21,4 +21,11 @@ func (h *Handler) Register(v1 *echo.Group) {
 	user.PATCH("/:id", h.UpdateUser)
 	user.DELETE("/:id", h.DeleteUser)
 	user.GET("", h.SearchUser)
+
+	chat := v1.Group("/chats", middleware.JWT(utils.GetSigningKey()))
+	chat.GET("/:chat_id", h.GetChat)
+	chat.DELETE("/:chat_id", h.DeleteChat)
+	chat.GET("", h.GetChatsList)
+	chat.POST("", h.AddChat)
+	chat.DELETE("/:chat_id/messages/:message_id", h.DeleteMessage)
 }
