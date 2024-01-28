@@ -18,7 +18,7 @@ func (h *Handler) GetContactsList(c echo.Context) error {
 		return echo.ErrBadRequest
 	}
 	userId := userIDFromToken(c)
-	if userId != id {
+	if userId != uint(id) {
 		return c.JSON(http.StatusForbidden, "Access Forbidden!")
 	}
 	contacts, err := h.contactRepo.GetList(c.Request().Context(), uint(id))
@@ -37,7 +37,7 @@ func (h *Handler) AddContact(c echo.Context) error {
 		return echo.ErrBadRequest
 	}
 	userId := userIDFromToken(c)
-	if userId != id {
+	if userId != uint(id) {
 		return c.JSON(http.StatusForbidden, "Access Forbidden!")
 	}
 
@@ -54,7 +54,7 @@ func (h *Handler) AddContact(c echo.Context) error {
 		return echo.ErrBadRequest
 	}
 
-	user, err := h.userRepo.GetUserByID(c.Request().Context(), r.ContactId)
+	_, err = h.userRepo.GetUserByID(c.Request().Context(), r.ContactId)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return c.JSON(http.StatusNoContent, "Contact Not Found!")
@@ -62,16 +62,15 @@ func (h *Handler) AddContact(c echo.Context) error {
 		return echo.ErrInternalServerError
 	}
 
-	check, err := h.contactRepo.GetById(c.Request().Context(), userId, r.contact_id)
+	check, err := h.contactRepo.GetById(c.Request().Context(), userId, r.ContactId)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			
-		}
-		else{
+
+		} else {
 			return echo.ErrInternalServerError
 		}
 	}
-	if(check != nil){
+	if check != nil {
 		return c.JSON(http.StatusNoContent, "You Have This Contact!")
 	}
 
@@ -98,16 +97,15 @@ func (h *Handler) DeleteContact(c echo.Context) error {
 		return echo.ErrBadRequest
 	}
 	userId := userIDFromToken(c)
-	if userId != id {
+	if userId != uint(id) {
 		return c.JSON(http.StatusForbidden, "Access Forbidden!")
 	}
 
-	check, err := h.contactRepo.GetById(c.Request().Context(), userId, contactId)
+	check, err := h.contactRepo.GetById(c.Request().Context(), userId, uint(contactId))
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return c.JSON(http.StatusNoContent, "Contact Not Found!")
-		}
-		else{
+		} else {
 			return echo.ErrInternalServerError
 		}
 	}
@@ -115,14 +113,13 @@ func (h *Handler) DeleteContact(c echo.Context) error {
 		return c.JSON(http.StatusNoContent, "Contact Not Found!")
 	}
 
-	err := h.contactRepo.Delete(c.Request().Context(), userId, contactId)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+	err2 := h.contactRepo.Delete(c.Request().Context(), userId, uint(contactId))
+	if err2 != nil {
+		if errors.Is(err2, gorm.ErrRecordNotFound) {
 			return c.JSON(http.StatusNoContent, "Contact Not Found!")
-		}
-		else{
+		} else {
 			return echo.ErrInternalServerError
 		}
 	}
-	return err
+	return err2
 }
