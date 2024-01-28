@@ -42,7 +42,7 @@ func (mr *MessageRepository) Delete(ctx context.Context, chat_id uint, message_i
 
 func (mr *MessageRepository) GetMessagesOfAChat(ctx context.Context, chat_id uint) (*[]model.Message, error) {
 
-	var messages = []model.Message{}
+	var messages []model.Message
 
 	if err := mr.db.Where("chatid = ?", chat_id).Find(&messages).Error; err != nil {
 		return &[]model.Message{}, err
