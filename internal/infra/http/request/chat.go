@@ -1,5 +1,5 @@
 package request
 
 type ChatAddRequest struct {
-	ReceiverId uint `json:"receivername" validate:"required"`
+	ReceiverId uint `json:"receiver_name" validate:"required"`
 }

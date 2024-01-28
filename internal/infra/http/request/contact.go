@@ -1,6 +1,6 @@
 package request
 
 type ContactAddRequest struct {
-	ContactId   uint   `json:"contactid" validate:"required"`
-	ContactName string `json:"contactname" validate:"required"`
+	ContactId   uint   `json:"contact_id" validate:"required"`
+	ContactName string `json:"contact_name" validate:"required"`
 }

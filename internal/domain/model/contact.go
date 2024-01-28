@@ -10,7 +10,7 @@ type Contact struct {
 	User           User   `gorm:"foreignKey:UserId"`
 	ContactId      uint   `gorm:"primaryKey;autoIncrement:false"`
 	Contact        User   `gorm:"foreignKey:ContactId"`
-	ContactName    string `json:"contactname,omitempty"`
-	ShowNumber     bool   `json:"shownumber,omitempty"`
-	ShowProfilePic bool   `json:"showprofilepic,omitempty"`
+	ContactName    string `json:"contact_name,omitempty"`
+	ShowNumber     bool   `json:"show_number,omitempty"`
+	ShowProfilePic bool   `json:"show_profile_pic,omitempty"`
 }
