@@ -27,12 +27,6 @@ var (
 	space   = []byte{' '}
 )
 
-//
-//var upgrader = websocket.Upgrader{
-//	ReadBufferSize:  1024,
-//	WriteBufferSize: 1024,
-//}
-
 // Client is a middleman between the ws connection and the hub.
 type Client struct {
 	Hub *Hub
@@ -49,7 +43,7 @@ type Client struct {
 // The application runs readPump in a per-connection goroutine. The application
 // ensures that there is at most one reader on a connection by executing all
 // reads from this goroutine.
-func (c *Client) ReadPump() {
+func (c *Client) readPump() {
 	defer func() {
 		c.Hub.unregister <- c
 		err := c.Conn.Close()
@@ -87,7 +81,7 @@ func (c *Client) ReadPump() {
 // A goroutine running writePump is started for each connection. The
 // application ensures that there is at most one writer to a connection by
 // executing all writes from this goroutine.
-func (c *Client) WritePump() {
+func (c *Client) writePump() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
