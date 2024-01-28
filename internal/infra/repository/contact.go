@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"errors"
-
 	"github.com/Hamid-Rezaei/goMessenger/internal/domain/model"
 	"gorm.io/gorm"
 )
@@ -44,8 +43,7 @@ func (cr *ContactRepository) GetById(_ context.Context, user_id uint, contact_id
 
 func (cr *ContactRepository) GetList(ctx context.Context, user_id uint) (*[]model.Contact, error) {
 	var contacts []model.Contact
-
-	if err := cr.db.Where("userid = ?", user_id).Find(&contacts).Error; err != nil {
+	if err := cr.db.Where("user_id = ?", user_id).Find(&contacts).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
@@ -54,10 +52,10 @@ func (cr *ContactRepository) GetList(ctx context.Context, user_id uint) (*[]mode
 	return &contacts, nil
 }
 
-func (cr *ContactRepository) Delete(ctx context.Context, user_id uint, contact_id uint) error {
+func (cr *ContactRepository) Delete(ctx context.Context, id uint) error {
 	tx := cr.db.WithContext(ctx).Begin()
 
-	if err := tx.Delete(&model.Contact{UserId: user_id, ContactId: contact_id}).Error; err != nil {
+	if err := tx.Delete(&model.Contact{}, id).Error; err != nil {
 		tx.Rollback()
 		return err
 	}

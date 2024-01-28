@@ -30,8 +30,9 @@ func main() {
 	cr := repository.NewContactRepo(dbConnection)
 	chr := repository.NewChatRepo(dbConnection)
 	mr := repository.NewMessageRepo(dbConnection)
+	pr := repository.NewPeopleRepo(dbConnection)
 
-	h := handler.NewHandler(ur, cr, chr, mr)
+	h := handler.NewHandler(ur, cr, chr, mr, pr)
 	h.Register(v1)
 
 	if err := r.Start("0.0.0.0:8080"); err != nil {

@@ -44,7 +44,7 @@ func (mr *MessageRepository) GetMessagesOfAChat(ctx context.Context, chat_id uin
 
 	var messages []model.Message
 
-	if err := mr.db.Where("chatid = ?", chat_id).Find(&messages).Error; err != nil {
+	if err := mr.db.Where("chat_id = ?", chat_id).Find(&messages).Error; err != nil {
 		return &[]model.Message{}, err
 	}
 	return &messages, nil

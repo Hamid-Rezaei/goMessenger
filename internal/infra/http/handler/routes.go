@@ -13,7 +13,7 @@ func (h *Handler) Register(v1 *echo.Group) {
 	contact.DELETE("/:contact_id", h.DeleteContact)
 
 	guestUsers := v1.Group("/users")
-	guestUsers.POST("", h.SignUp)
+	guestUsers.POST("/register", h.SignUp)
 	guestUsers.POST("/login", h.Login)
 
 	user := v1.Group("/users", middleware.JWT(utils.GetSigningKey()))

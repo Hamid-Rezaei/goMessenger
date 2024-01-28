@@ -40,6 +40,40 @@ func (h *Handler) DeleteMessage(c echo.Context) error {
 				return echo.ErrInternalServerError
 			}
 		}
+		return c.JSON(http.StatusOK, "Message Deleted")
+	} else {
+		return c.JSON(http.StatusNotFound, "Message Not Found!")
+	}
+
+}
+
+func (h *Handler) AddMessage(c echo.Context) error {
+	chatId, err := strconv.ParseUint(c.Param("chat_id"), 10, 64)
+	if err != nil {
+		return echo.ErrBadRequest
+	}
+	userId := userIDFromToken(c)
+
+	check, err := h.messageRepo.GetMessage(c.Request().Context(), uint(chatId), uint(messageId))
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return c.JSON(http.StatusNotFound, "Message Not Found!")
+		} else {
+			return echo.ErrInternalServerError
+		}
+	}
+	if check == nil {
+		return c.JSON(http.StatusNotFound, "Message Not Found!")
+	}
+	if check.SenderId == userId {
+		err := h.messageRepo.Delete(c.Request().Context(), uint(chatId), uint(messageId))
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return c.JSON(http.StatusNotFound, "Message Not Found!")
+			} else {
+				return echo.ErrInternalServerError
+			}
+		}
 		return err
 	} else {
 		return c.JSON(http.StatusNotFound, "Message Not Found!")
