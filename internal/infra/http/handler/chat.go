@@ -86,7 +86,7 @@ func (h *Handler) GetChat(c echo.Context) error {
 		return echo.ErrInternalServerError
 	}
 
-	if slices.Contains(chat.People, userId){
+	if slices.Contains(chat.People, userId) {
 		messages, err := h.messageRepo.GetMessagesOfAChat(c.Request().Context(), uint(id))
 		if err != nil {
 			if !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -97,45 +97,41 @@ func (h *Handler) GetChat(c echo.Context) error {
 			Chat:     chat,
 			Messages: messages,
 		})
-	}
-	else{
+	} else {
 		return c.JSON(http.StatusNotFound, "Chat Not Found!")
-	} 
+	}
 }
 
 func (h *Handler) DeleteChat(c echo.Context) error {
-	_, err := strconv.ParseUint(c.Param("chat_id"), 10, 64)
+	chatId, err := strconv.ParseUint(c.Param("chat_id"), 10, 64)
 	if err != nil {
 		return echo.ErrBadRequest
 	}
 	userId := userIDFromToken(c)
 
-	check, err := h.chatRepo.GetChatById(c.Request().Context(), chat_id)
+	chat, err := h.chatRepo.GetChatById(c.Request().Context(), uint(chatId))
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return c.JSON(http.StatusNoContent, "Chat Not Found!")
-		}
-		else{
+		} else {
 			return echo.ErrInternalServerError
 		}
 	}
-	if check == nil {
+	if chat == nil {
 		return c.JSON(http.StatusNoContent, "Chat Not Found!")
 	}
 
-	if slices.Contains(chat.People, userId){
-		err := h.chatRepo.Delete(c.Request().Context(), chat_id)
+	if slices.Contains(chat.People, userId) {
+		err := h.chatRepo.Delete(c.Request().Context(), uint(chatId))
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				return c.JSON(http.StatusNoContent, "Chat Not Found!")
-			}
-			else{
+			} else {
 				return echo.ErrInternalServerError
 			}
 		}
 		return err
-	}
-	else{
+	} else {
 		return c.JSON(http.StatusNotFound, "Chat Not Found!")
-	} 
+	}
 }
