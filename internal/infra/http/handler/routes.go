@@ -7,6 +7,11 @@ import (
 )
 
 func (h *Handler) Register(v1 *echo.Group) {
+	contact := v1.Group("/users/:user_id/contacts", middleware.JWT(utils.GetSigningKey()))
+	contact.GET("", h.GetContactsList)
+	contact.POST("", h.AddContact)
+	contact.DELETE("/:contact_id")
+
 	guestUsers := v1.Group("/users")
 	guestUsers.POST("", h.SignUp)
 	guestUsers.POST("/login", h.Login)
@@ -16,4 +21,11 @@ func (h *Handler) Register(v1 *echo.Group) {
 	user.PATCH("/:id", h.UpdateUser)
 	user.DELETE("/:id", h.DeleteUser)
 	user.GET("", h.SearchUser)
+
+	chat := v1.Group("/chats", middleware.JWT(utils.GetSigningKey()))
+	chat.GET("/:chat_id", h.GetChat)
+	chat.DELETE("/:chat_id", h.DeleteChat)
+	chat.GET("", h.GetChatsList)
+	chat.POST("", h.AddChat)
+	chat.DELETE("/:chat_id/messages/:message_id", h.DeleteMessage)
 }

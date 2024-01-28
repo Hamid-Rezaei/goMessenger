@@ -1,12 +1,13 @@
 package main
 
 import (
+	"log"
+
 	"github.com/Hamid-Rezaei/goMessenger/internal/infra/db"
 	"github.com/Hamid-Rezaei/goMessenger/internal/infra/http/handler"
 	"github.com/Hamid-Rezaei/goMessenger/internal/infra/repository"
 	"github.com/Hamid-Rezaei/goMessenger/internal/infra/router"
 	"github.com/joho/godotenv"
-	"log"
 )
 
 func main() {
@@ -26,8 +27,11 @@ func main() {
 	v1 := r.Group("/api")
 
 	ur := repository.NewUserRepo(dbConnection)
+	cr := repository.NewContactRepo(dbConnection)
+	chr := repository.NewChatRepo(dbConnection)
+	mr := repository.NewMessageRepo(dbConnection)
 
-	h := handler.NewHandler(ur)
+	h := handler.NewHandler(ur, cr, chr, mr)
 	h.Register(v1)
 
 	if err := r.Start("0.0.0.0:8080"); err != nil {
