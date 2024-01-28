@@ -6,6 +6,7 @@ import (
 
 type Message struct {
 	gorm.Model
+	ID         uint   `gorm:"primarykey"`
 	ChatId     uint   `json:"chat_id,omitempty"`
 	Chat       Chat   `gorm:"foreignKey:ChatId"`
 	SenderId   uint   `json:"sender_id,omitempty"`

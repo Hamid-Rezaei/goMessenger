@@ -7,4 +7,5 @@ import (
 type Chat struct {
 	gorm.Model
 	People []uint
+	ID     uint `gorm:"primarykey"`
 }

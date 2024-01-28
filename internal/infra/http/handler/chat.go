@@ -57,7 +57,7 @@ func (h *Handler) AddChat(c echo.Context) error {
 	if err != nil {
 		return echo.ErrInternalServerError
 	}
-	return c.JSON(201, res)
+	return c.JSON(201, response.NewChatResponse(res))
 }
 
 func (h *Handler) GetChatsList(c echo.Context) error {
@@ -69,7 +69,7 @@ func (h *Handler) GetChatsList(c echo.Context) error {
 		}
 		return echo.ErrInternalServerError
 	}
-	return c.JSON(http.StatusOK, chats)
+	return c.JSON(http.StatusOK, response.NewChatsResponse(chats))
 }
 
 func (h *Handler) GetChat(c echo.Context) error {
@@ -93,7 +93,7 @@ func (h *Handler) GetChat(c echo.Context) error {
 				return echo.ErrInternalServerError
 			}
 		}
-		return c.JSON(http.StatusOK, response.ChatResponse{
+		return c.JSON(http.StatusOK, response.ChatWithMessageResponse{
 			Chat:     chat,
 			Messages: messages,
 		})
@@ -130,7 +130,7 @@ func (h *Handler) DeleteChat(c echo.Context) error {
 				return echo.ErrInternalServerError
 			}
 		}
-		return err
+		return c.JSON(http.StatusOK, "Chat Deleted!")
 	} else {
 		return c.JSON(http.StatusNotFound, "Chat Not Found!")
 	}

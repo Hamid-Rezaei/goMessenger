@@ -10,17 +10,17 @@ import (
 )
 
 func (h *Handler) DeleteMessage(c echo.Context) error {
-	chat_id, err := strconv.ParseUint(c.Param("chat_id"), 10, 64)
+	chatId, err := strconv.ParseUint(c.Param("chat_id"), 10, 64)
 	if err != nil {
 		return echo.ErrBadRequest
 	}
-	message_id, err := strconv.ParseUint(c.Param("message_id"), 10, 64)
+	messageId, err := strconv.ParseUint(c.Param("message_id"), 10, 64)
 	if err != nil {
 		return echo.ErrBadRequest
 	}
-	user_id := userIDFromToken(c)
+	userId := userIDFromToken(c)
 
-	check, err := h.messageRepo.GetMessage(c.Request().Context(), chat_id, message_id)
+	check, err := h.messageRepo.GetMessage(c.Request().Context(), uint(chatId), uint(messageId))
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return c.JSON(http.StatusNotFound, "Message Not Found!")
@@ -31,8 +31,8 @@ func (h *Handler) DeleteMessage(c echo.Context) error {
 	if check == nil {
 		return c.JSON(http.StatusNotFound, "Message Not Found!")
 	}
-	if check.SenderId == user_id {
-		err := h.messageRepo.Delete(c.Request().Context(), chat_id, message_id)
+	if check.SenderId == userId {
+		err := h.messageRepo.Delete(c.Request().Context(), uint(chatId), uint(messageId))
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				return c.JSON(http.StatusNotFound, "Message Not Found!")
