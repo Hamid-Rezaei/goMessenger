@@ -41,10 +41,10 @@ func (ur UserRegisterRequest) Validate() error {
 	return nil
 }
 
-func (ul UserLoginRequest) Validate() error {
+func (ur UserLoginRequest) Validate() error {
 	validate := validator.New(validator.WithRequiredStructEnabled())
 
-	if err := validate.Struct(ul); err != nil {
+	if err := validate.Struct(ur); err != nil {
 		return fmt.Errorf("user login request validation failed %w", err)
 	}
 

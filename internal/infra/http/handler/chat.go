@@ -4,19 +4,21 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"slices"
 	"strconv"
 	"time"
 
 	"github.com/Hamid-Rezaei/goMessenger/internal/domain/model"
 	"github.com/Hamid-Rezaei/goMessenger/internal/infra/http/request"
+	"github.com/Hamid-Rezaei/goMessenger/internal/infra/http/response"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
 
 func (h *Handler) AddChat(c echo.Context) error {
-	user_id := userIDFromToken(c)
+	userId := userIDFromToken(c)
 
-	var r request.ChatAddRequest
+	var r request.CreateChatRequest
 
 	// Bind Request
 	if err := c.Bind(&r); err != nil {
@@ -29,7 +31,7 @@ func (h *Handler) AddChat(c echo.Context) error {
 		return echo.ErrBadRequest
 	}
 
-	user, err := h.userRepo.GetUserByID(c.Request().Context(), r.ReceiverId)
+	_, err := h.userRepo.GetUserByID(c.Request().Context(), r.ReceiverId)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return c.JSON(http.StatusNotFound, "Receiver Not Found!")
@@ -37,7 +39,7 @@ func (h *Handler) AddChat(c echo.Context) error {
 		return echo.ErrInternalServerError
 	}
 
-	check, err := h.chatRepo.GetChat(c.Request().Context(), user_id, r.ReceiverId)
+	check, err := h.chatRepo.GetChat(c.Request().Context(), userId, r.ReceiverId)
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return echo.ErrInternalServerError
@@ -48,7 +50,7 @@ func (h *Handler) AddChat(c echo.Context) error {
 	}
 
 	var chat model.Chat
-	chat.People = []uint{user_id, r.ReceiverId}
+	chat.People = []uint{userId, r.ReceiverId}
 	chat.CreatedAt = time.Now()
 
 	res, err := h.chatRepo.Create(c.Request().Context(), chat)
@@ -59,8 +61,8 @@ func (h *Handler) AddChat(c echo.Context) error {
 }
 
 func (h *Handler) GetChatsList(c echo.Context) error {
-	user_id := userIDFromToken(c)
-	chats, err := h.chatRepo.GetChatList(c.Request().Context(), uint(user_id))
+	userId := userIDFromToken(c)
+	chats, err := h.chatRepo.GetChatList(c.Request().Context(), userId)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return c.JSON(http.StatusNoContent, "No Chat Not Found!")
@@ -75,7 +77,7 @@ func (h *Handler) GetChat(c echo.Context) error {
 	if err != nil {
 		return echo.ErrBadRequest
 	}
-	user_id := userIDFromToken(c)
+	userId := userIDFromToken(c)
 	chat, err := h.chatRepo.GetChatById(c.Request().Context(), uint(id))
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -84,14 +86,17 @@ func (h *Handler) GetChat(c echo.Context) error {
 		return echo.ErrInternalServerError
 	}
 
-	if slices.Contains(chat.People, user_id){
+	if slices.Contains(chat.People, userId){
 		messages, err := h.messageRepo.GetMessagesOfAChat(c.Request().Context(), uint(id))
 		if err != nil {
 			if !errors.Is(err, gorm.ErrRecordNotFound) {
 				return echo.ErrInternalServerError
 			}
 		}
-		return c.JSON(http.StatusOK, {chat : chat, messages : messages})
+		return c.JSON(http.StatusOK, response.ChatResponse{
+			Chat:     chat,
+			Messages: messages,
+		})
 	}
 	else{
 		return c.JSON(http.StatusNotFound, "Chat Not Found!")
@@ -99,11 +104,11 @@ func (h *Handler) GetChat(c echo.Context) error {
 }
 
 func (h *Handler) DeleteChat(c echo.Context) error {
-	id, err := strconv.ParseUint(c.Param("chat_id"), 10, 64)
+	_, err := strconv.ParseUint(c.Param("chat_id"), 10, 64)
 	if err != nil {
 		return echo.ErrBadRequest
 	}
-	user_id := userIDFromToken(c)
+	userId := userIDFromToken(c)
 
 	check, err := h.chatRepo.GetChatById(c.Request().Context(), chat_id)
 	if err != nil {
@@ -114,11 +119,11 @@ func (h *Handler) DeleteChat(c echo.Context) error {
 			return echo.ErrInternalServerError
 		}
 	}
-	if(check == nil){
+	if check == nil {
 		return c.JSON(http.StatusNoContent, "Chat Not Found!")
 	}
 
-	if slices.Contains(chat.People, user_id){
+	if slices.Contains(chat.People, userId){
 		err := h.chatRepo.Delete(c.Request().Context(), chat_id)
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
