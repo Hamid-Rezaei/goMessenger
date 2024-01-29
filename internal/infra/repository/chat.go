@@ -2,9 +2,6 @@ package repository
 
 import (
 	"context"
-	"errors"
-	"slices"
-
 	"github.com/Hamid-Rezaei/goMessenger/internal/domain/model"
 	"gorm.io/gorm"
 )
@@ -31,39 +28,18 @@ func (chr *ChatRepository) Create(ctx context.Context, model model.Chat) (*model
 	return &chat, tx.Commit().Error
 }
 
-func (chr *ChatRepository) GetChatList(ctx context.Context, user_id uint) (*[]model.Chat, error) {
+func (chr *ChatRepository) GetChatList(ctx context.Context, userId uint) (*[]model.Chat, error) {
 	var chats []model.Chat
+	chr.db.Raw("SELECT c.* FROM chats c INNER JOIN peoples p ON c.id = p.chat_id WHERE p.user_id = ? and c.deleted_at is null", userId).Scan(&chats)
 
-	if err := chr.db.Find(&chats).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
-		return nil, err
-	}
-	result := []model.Chat{}
-	for _, chat := range chats {
-		if slices.Contains(chat.People, user_id) {
-			result = append(result, chat)
-		}
-	}
-	return &result, nil
+	return &chats, nil
 }
 
-func (chr *ChatRepository) GetChat(ctx context.Context, user_id uint, receiver_id uint) (*model.Chat, error) {
-	var chats []model.Chat
+func (chr *ChatRepository) GetChat(ctx context.Context, userId uint, receiverId uint) (*model.Chat, error) {
+	var chat *model.Chat
+	chr.db.Raw("SELECT c.* FROM chats c INNER JOIN (SELECT p1.chat_id as chat_id FROM peoples p1 INNER JOIN peoples p2 ON p1.chat_id = p2.chat_id WHERE p1.user_id = ? and p2.user_id=?) p ON c.id = p.chat_id", userId, receiverId).Scan(&chat)
 
-	if err := chr.db.Find(&chats).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
-		return nil, err
-	}
-	for _, chat := range chats {
-		if slices.Contains(chat.People, user_id) && slices.Contains(chat.People, receiver_id) {
-			return &chat, nil
-		}
-	}
-	return nil, nil
+	return chat, nil
 }
 
 func (chr *ChatRepository) GetChatById(ctx context.Context, chat_id uint) (*model.Chat, error) {

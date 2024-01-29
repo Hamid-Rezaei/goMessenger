@@ -44,8 +44,22 @@ func (mr *MessageRepository) GetMessagesOfAChat(ctx context.Context, chat_id uin
 
 	var messages []model.Message
 
-	if err := mr.db.Where("chatid = ?", chat_id).Find(&messages).Error; err != nil {
+	if err := mr.db.Where("chat_id = ?", chat_id).Find(&messages).Error; err != nil {
 		return &[]model.Message{}, err
 	}
 	return &messages, nil
+}
+
+func (mr *MessageRepository) AddMessage(ctx context.Context, chatId uint, content string, senderId uint, receiverId uint) (*model.Message, error) {
+
+	tx := mr.db.WithContext(ctx).Begin()
+
+	message := model.Message{Content: content, SenderId: senderId, ChatId: chatId, ReceiverId: receiverId}
+	if err := tx.Create(&message).Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	return &message,
+		tx.Commit().Error
 }

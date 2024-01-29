@@ -21,7 +21,6 @@ type ChatsResponse struct {
 func NewChatResponse(c *model.Chat) *ChatResponse {
 	r := new(ChatResponse)
 	r.ID = c.ID
-	r.People = c.People
 	return r
 }
 

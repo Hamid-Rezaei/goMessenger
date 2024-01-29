@@ -86,12 +86,17 @@ func (h *Handler) Login(c echo.Context) error {
 }
 
 func (h *Handler) CurrentUser(c echo.Context) error {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	user, err := h.userRepo.GetUserByID(c.Request().Context(), userIDFromToken(c))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 	if user == nil {
 		return c.JSON(http.StatusNotFound, "User Does not exist!")
+	}
+	userID := userIDFromToken(c)
+	if userID != uint(id) {
+		return c.JSON(http.StatusForbidden, "Access Forbidden!")
 	}
 	return c.JSON(http.StatusOK, response.NewUserResponse(user))
 }

@@ -19,7 +19,7 @@ type ContactRepo interface {
 	Create(ctx context.Context, model model.Contact) (*model.Contact, error)
 	GetList(ctx context.Context, userId uint) (*[]model.Contact, error)
 	GetById(_ context.Context, userId uint, contactId uint) (*model.Contact, error)
-	Delete(ctx context.Context, userId uint, contactId uint) error
+	Delete(ctx context.Context, id uint) error
 }
 
 type ChatRepo interface {
@@ -34,4 +34,11 @@ type MessageRepo interface {
 	GetMessage(ctx context.Context, chatId uint, messageId uint) (*model.Message, error)
 	Delete(ctx context.Context, chatId uint, messageId uint) error
 	GetMessagesOfAChat(ctx context.Context, chatId uint) (*[]model.Message, error)
+	AddMessage(ctx context.Context, chatId uint, content string, senderId uint, receiverId uint) (*model.Message, error)
+}
+
+type PeopleRepo interface {
+	Create(ctx context.Context, model model.People) (*model.People, error)
+	Get(ctx context.Context, userId uint, chatId uint) (*model.People, error)
+	GetChatUsers(ctx context.Context, chatId uint) ([]uint, error)
 }
