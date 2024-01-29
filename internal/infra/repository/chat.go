@@ -30,7 +30,7 @@ func (chr *ChatRepository) Create(ctx context.Context, model model.Chat) (*model
 
 func (chr *ChatRepository) GetChatList(ctx context.Context, userId uint) (*[]model.Chat, error) {
 	var chats []model.Chat
-	chr.db.Raw("SELECT c.* FROM chats c INNER JOIN peoples p ON c.id = p.chat_id WHERE p.user_id = ?", userId).Scan(&chats)
+	chr.db.Raw("SELECT c.* FROM chats c INNER JOIN peoples p ON c.id = p.chat_id WHERE p.user_id = ? and c.deleted_at is null", userId).Scan(&chats)
 
 	return &chats, nil
 }

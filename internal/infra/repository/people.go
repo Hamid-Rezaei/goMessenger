@@ -40,3 +40,19 @@ func (pr *PeopleRepository) Get(ctx context.Context, userId uint, chatId uint) (
 	}
 	return &people, nil
 }
+
+func (pr *PeopleRepository) GetChatUsers(ctx context.Context, chatId uint) ([]uint, error) {
+	var people *[]model.People
+
+	if err := pr.db.Where("chat_id = ?", chatId).Find(&people).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	var result = []uint{}
+	for _, element := range *people {
+		result = append(result, element.UserID)
+	}
+	return result, nil
+}

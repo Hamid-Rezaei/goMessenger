@@ -28,4 +28,5 @@ func (h *Handler) Register(v1 *echo.Group) {
 	chat.GET("", h.GetChatsList)
 	chat.POST("", h.AddChat)
 	chat.DELETE("/:chat_id/messages/:message_id", h.DeleteMessage)
+	chat.POST("/:chat_id/messages", h.AddMessage)
 }
