@@ -63,3 +63,17 @@ func (mr *MessageRepository) AddMessage(ctx context.Context, chatId uint, conten
 	return &message,
 		tx.Commit().Error
 }
+
+func (mr *MessageRepository) GetNewMessagesOfAChat(_ context.Context, chat_id uint, newMessages uint) (*[]model.Message, error) {
+
+	var messages []model.Message
+
+	if err := mr.db.Where("chat_id = ?", chat_id).
+		Order("timestamp DESC").
+		Limit(int(newMessages)).
+		Find(&messages).Error; err != nil {
+		return &[]model.Message{}, err
+	}
+
+	return &messages, nil
+}
