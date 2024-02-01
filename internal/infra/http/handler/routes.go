@@ -29,4 +29,12 @@ func (h *Handler) Register(v1 *echo.Group) {
 	chat.POST("", h.AddChat)
 	chat.DELETE("/:chat_id/messages/:message_id", h.DeleteMessage)
 	chat.POST("/:chat_id/messages", h.AddMessage)
+	chat.GET("/:chat_id/messages/new", h.GetChatNewMessages)
+
+	group := v1.Group("/groups", middleware.JWT(utils.GetSigningKey()))
+	group.POST("", h.AddGroup)
+	group.DELETE("/:group_id", h.DeleteGroup)
+	group.PATCH("/:group_id", h.AddMember)
+	group.DELETE("/:group_id/:user_id", h.DeleteMember)
+
 }

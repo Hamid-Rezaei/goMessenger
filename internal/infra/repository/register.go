@@ -44,3 +44,11 @@ type PeopleRepo interface {
 	SetNewMessageToZero(ctx context.Context, chatId uint, userId uint) error
 	AddNewMessages(ctx context.Context, chatId uint, userId uint) error
 }
+
+type GroupRepo interface {
+	//Create(ctx context.Context, model model.Chat) (*model.Chat, error)
+	//GetChatList(ctx context.Context, userId uint) (*[]model.Chat, error)
+	//GetChatById(ctx context.Context, chatId uint) (*model.Chat, error)
+	//GetChat(ctx context.Context, userId uint, receiverId uint) (*model.Chat, error)
+	//Delete(ctx context.Context, chatId uint) error
+}
