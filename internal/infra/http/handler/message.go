@@ -105,3 +105,7 @@ func (h *Handler) AddMessage(c echo.Context) error {
 		return c.JSON(http.StatusNotFound, "Chat Not Found!")
 	}
 }
+
+//func (h *Handler) getNewMessages(c echo.Context) error {
+//
+//}

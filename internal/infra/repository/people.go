@@ -82,3 +82,24 @@ func (pr *PeopleRepository) AddNewMessages(ctx context.Context, chatId uint, use
 	pr.db.Raw("UPDATE Peoples WHERE chat_id=? and user_id = ? SET new_messages=?", chatId, user_id, people.NewMessages+1)
 	return nil
 }
+
+//func (pr *PeopleRepository) getNewMessages(ctx context.Context, chatId uint, userId uint) (*[]model.Message, error) {
+//	res, err := pr.GetChatUsers(ctx, chatId)
+//	if err != nil {
+//		return nil, err
+//	}
+//	var user_id = 0
+//	for _, element := range res {
+//		if element != userId {
+//			user_id = int(element)
+//			break
+//		}
+//	}
+//	var people model.People
+//	err1 := pr.db.Where("user_id = ? and chat_id = ?", user_id, chatId).First(&people).Error
+//	if err1 != nil {
+//		return err1
+//	}
+//	pr.db.Raw("UPDATE Peoples WHERE chat_id=? and user_id = ? SET new_messages=?", chatId, user_id, people.NewMessages+1)
+//	return nil
+//}
