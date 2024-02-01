@@ -82,3 +82,15 @@ func (pr *PeopleRepository) AddNewMessages(ctx context.Context, chatId uint, use
 	pr.db.Raw("UPDATE Peoples WHERE chat_id=? and user_id = ? SET new_messages=?", chatId, user_id, people.NewMessages+1)
 	return nil
 }
+
+func (pr *PeopleRepository) GetNewMessagesCount(_ context.Context, chatId uint, userId uint) (int, error) {
+	var newMessagesCount int
+	if err := pr.db.Model(&model.People{}).
+		Where("chat_id = ? AND user_id = ?", chatId, userId).
+		Pluck("new_messages", &newMessagesCount).
+		Error; err != nil {
+		return 0, err
+	}
+
+	return newMessagesCount, nil
+}
