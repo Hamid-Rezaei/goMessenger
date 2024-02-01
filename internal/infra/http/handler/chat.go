@@ -4,7 +4,6 @@ import (
 	"errors"
 	"log"
 	"net/http"
-	"slices"
 	"strconv"
 	"time"
 
@@ -30,7 +29,6 @@ func (h *Handler) AddChat(c echo.Context) error {
 		log.Printf("%v\n", err)
 		return echo.ErrBadRequest
 	}
-
 	_, err := h.userRepo.GetUserByID(c.Request().Context(), r.ReceiverId)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -40,20 +38,38 @@ func (h *Handler) AddChat(c echo.Context) error {
 	}
 
 	check, err := h.chatRepo.GetChat(c.Request().Context(), userId, r.ReceiverId)
+	log.Println(check)
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return echo.ErrInternalServerError
 		}
 	}
 	if check != nil {
-		return c.JSON(http.StatusNoContent, "You Have Chat With This User!")
+		return c.JSON(http.StatusBadRequest, "You Have Chat With This User!")
+	}
+	var chat model.Chat
+	chat.CreatedAt = time.Now()
+	res, err := h.chatRepo.Create(c.Request().Context(), chat)
+	if err != nil {
+		return echo.ErrInternalServerError
 	}
 
-	var chat model.Chat
-	chat.People = []uint{userId, r.ReceiverId}
-	chat.CreatedAt = time.Now()
+	var people1 model.People
+	people1.ChatID = res.ID
+	people1.UserID = userId
+	var people2 model.People
+	people2.ChatID = res.ID
+	people2.UserID = r.ReceiverId
 
-	res, err := h.chatRepo.Create(c.Request().Context(), chat)
+	_, err2 := h.peopleRepo.Create(c.Request().Context(), people1)
+	if err2 != nil {
+		return echo.ErrInternalServerError
+	}
+	_, err3 := h.peopleRepo.Create(c.Request().Context(), people2)
+	if err3 != nil {
+		return echo.ErrInternalServerError
+	}
+
 	if err != nil {
 		return echo.ErrInternalServerError
 	}
@@ -62,6 +78,7 @@ func (h *Handler) AddChat(c echo.Context) error {
 
 func (h *Handler) GetChatsList(c echo.Context) error {
 	userId := userIDFromToken(c)
+
 	chats, err := h.chatRepo.GetChatList(c.Request().Context(), userId)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -86,19 +103,28 @@ func (h *Handler) GetChat(c echo.Context) error {
 		return echo.ErrInternalServerError
 	}
 
-	if slices.Contains(chat.People, userId) {
+	people, err2 := h.peopleRepo.Get(c.Request().Context(), userId, uint(id))
+	if err2 != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return c.JSON(http.StatusNotFound, "Chat Not Found!")
+		}
+		return echo.ErrInternalServerError
+	}
+	if people == nil {
+		return c.JSON(http.StatusNotFound, "Chat Not Found!")
+	} else {
 		messages, err := h.messageRepo.GetMessagesOfAChat(c.Request().Context(), uint(id))
 		if err != nil {
 			if !errors.Is(err, gorm.ErrRecordNotFound) {
 				return echo.ErrInternalServerError
 			}
 		}
+		h.peopleRepo.SetNewMessageToZero(c.Request().Context(), chat.ID, userId)
+
 		return c.JSON(http.StatusOK, response.ChatWithMessageResponse{
 			Chat:     chat,
 			Messages: messages,
 		})
-	} else {
-		return c.JSON(http.StatusNotFound, "Chat Not Found!")
 	}
 }
 
@@ -112,16 +138,25 @@ func (h *Handler) DeleteChat(c echo.Context) error {
 	chat, err := h.chatRepo.GetChatById(c.Request().Context(), uint(chatId))
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return c.JSON(http.StatusNoContent, "Chat Not Found!")
+			return c.JSON(http.StatusBadRequest, "Chat Not Found!")
 		} else {
 			return echo.ErrInternalServerError
 		}
 	}
 	if chat == nil {
-		return c.JSON(http.StatusNoContent, "Chat Not Found!")
+		return c.JSON(http.StatusBadRequest, "Chat Not Found!")
 	}
 
-	if slices.Contains(chat.People, userId) {
+	people, err2 := h.peopleRepo.Get(c.Request().Context(), userId, uint(chat.ID))
+	if err2 != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return c.JSON(http.StatusBadRequest, "Chat Not Found!")
+		}
+		return echo.ErrInternalServerError
+	}
+	if people == nil {
+		return c.JSON(http.StatusNotFound, "Chat Not Found!")
+	} else {
 		err := h.chatRepo.Delete(c.Request().Context(), uint(chatId))
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -131,7 +166,5 @@ func (h *Handler) DeleteChat(c echo.Context) error {
 			}
 		}
 		return c.JSON(http.StatusOK, "Chat Deleted!")
-	} else {
-		return c.JSON(http.StatusNotFound, "Chat Not Found!")
 	}
 }

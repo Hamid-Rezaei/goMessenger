@@ -6,6 +6,11 @@ import (
 
 type Chat struct {
 	gorm.Model
-	People []uint
-	ID     uint `gorm:"primarykey"`
+	ID uint `gorm:"primarykey"`
+}
+
+type People struct {
+	ChatID      uint `gorm:"primarykey:ChatId"`
+	UserID      uint `gorm:"primarykey:UserId"`
+	NewMessages uint `json:"new_messages"`
 }

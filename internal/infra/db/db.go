@@ -47,6 +47,10 @@ func CreateURI() string {
 func AutoMigrate(db *gorm.DB) {
 	if err := db.AutoMigrate(
 		new(model.User),
+		new(model.Contact),
+		new(model.Chat),
+		new(model.Message),
+		new(model.People),
 	); err != nil {
 		log.Fatalf("failed to run migrations %v", err)
 	}

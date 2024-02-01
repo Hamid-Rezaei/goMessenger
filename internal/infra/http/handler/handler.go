@@ -7,13 +7,15 @@ type Handler struct {
 	contactRepo repository.ContactRepo
 	chatRepo    repository.ChatRepo
 	messageRepo repository.MessageRepo
+	peopleRepo  repository.PeopleRepo
 }
 
-func NewHandler(ur repository.UserRepo, cr repository.ContactRepo, chr repository.ChatRepo, mr repository.MessageRepo) *Handler {
+func NewHandler(ur repository.UserRepo, cr repository.ContactRepo, chr repository.ChatRepo, mr repository.MessageRepo, pr repository.PeopleRepo) *Handler {
 	return &Handler{
 		userRepo:    ur,
 		contactRepo: cr,
 		chatRepo:    chr,
 		messageRepo: mr,
+		peopleRepo:  pr,
 	}
 }
