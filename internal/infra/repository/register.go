@@ -35,6 +35,7 @@ type MessageRepo interface {
 	Delete(ctx context.Context, chatId uint, messageId uint) error
 	GetMessagesOfAChat(ctx context.Context, chatId uint) (*[]model.Message, error)
 	AddMessage(ctx context.Context, chatId uint, content string, senderId uint, receiverId uint) (*model.Message, error)
+	GetNewMessagesOfAChat(_ context.Context, chatId uint, newMessages uint) (*[]model.Message, error)
 }
 
 type PeopleRepo interface {
@@ -43,6 +44,7 @@ type PeopleRepo interface {
 	GetChatUsers(ctx context.Context, chatId uint) ([]uint, error)
 	SetNewMessageToZero(ctx context.Context, chatId uint, userId uint) error
 	AddNewMessages(ctx context.Context, chatId uint, userId uint) error
+	GetNewMessagesCount(_ context.Context, chatId uint, userId uint) (int, error)
 }
 
 type GroupRepo interface {

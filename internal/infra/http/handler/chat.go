@@ -168,3 +168,44 @@ func (h *Handler) DeleteChat(c echo.Context) error {
 		return c.JSON(http.StatusOK, "Chat Deleted!")
 	}
 }
+
+func (h *Handler) GetChatNewMessages(c echo.Context) error {
+	id, err := strconv.ParseUint(c.Param("chat_id"), 10, 64)
+	if err != nil {
+		return echo.ErrBadRequest
+	}
+	userId := userIDFromToken(c)
+	chat, err := h.chatRepo.GetChatById(c.Request().Context(), uint(id))
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return c.JSON(http.StatusNotFound, "Chat Not Found!")
+		}
+		return echo.ErrInternalServerError
+	}
+
+	people, err2 := h.peopleRepo.Get(c.Request().Context(), userId, uint(id))
+	if err2 != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return c.JSON(http.StatusNotFound, "Chat Not Found!")
+		}
+		return echo.ErrInternalServerError
+	}
+	if people == nil {
+		return c.JSON(http.StatusNotFound, "Chat Not Found!")
+	} else {
+
+		newMessages, _ := h.peopleRepo.GetNewMessagesCount(c.Request().Context(), chat.ID, userId)
+		messages, err := h.messageRepo.GetNewMessagesOfAChat(c.Request().Context(), uint(id), uint(newMessages))
+		if err != nil {
+			if !errors.Is(err, gorm.ErrRecordNotFound) {
+				return echo.ErrInternalServerError
+			}
+		}
+		h.peopleRepo.SetNewMessageToZero(c.Request().Context(), chat.ID, userId)
+
+		return c.JSON(http.StatusOK, response.ChatWithMessageResponse{
+			Chat:     chat,
+			Messages: messages,
+		})
+	}
+}
