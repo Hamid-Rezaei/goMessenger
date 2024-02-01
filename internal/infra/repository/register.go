@@ -41,4 +41,6 @@ type PeopleRepo interface {
 	Create(ctx context.Context, model model.People) (*model.People, error)
 	Get(ctx context.Context, userId uint, chatId uint) (*model.People, error)
 	GetChatUsers(ctx context.Context, chatId uint) ([]uint, error)
+	SetNewMessageToZero(ctx context.Context, chatId uint, userId uint) error
+	AddNewMessages(ctx context.Context, chatId uint, userId uint)
 }

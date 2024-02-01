@@ -119,6 +119,8 @@ func (h *Handler) GetChat(c echo.Context) error {
 				return echo.ErrInternalServerError
 			}
 		}
+		h.peopleRepo.SetNewMessageToZero(c.Request().Context(), chat.ID, userId)
+
 		return c.JSON(http.StatusOK, response.ChatWithMessageResponse{
 			Chat:     chat,
 			Messages: messages,

@@ -68,33 +68,26 @@ func (h *Handler) AddMessage(c echo.Context) error {
 		log.Printf("%v\n", err)
 		return echo.ErrBadRequest
 	}
-	log.Println("tttt")
 	chat, err := h.chatRepo.GetChatById(c.Request().Context(), uint(chatId))
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			log.Println("zzzz")
 			return c.JSON(http.StatusBadRequest, "Chat Not Found!")
 		} else {
-			log.Println("zxxxzzz")
 			return echo.ErrInternalServerError
 		}
 	}
 	if chat == nil {
-		log.Println("wwww")
 		return c.JSON(http.StatusBadRequest, "Chat Not Found!")
 	}
 
 	people, err2 := h.peopleRepo.Get(c.Request().Context(), userId, uint(chat.ID))
 	if err2 != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			log.Println("yyyyy")
 			return c.JSON(http.StatusBadRequest, "Chat Not Found!")
 		}
-		log.Println("zzzzeee")
 		return echo.ErrInternalServerError
 	}
 	if people == nil {
-		log.Println("pppp")
 		return c.JSON(http.StatusNotFound, "Chat Not Found!")
 	} else {
 		temp, _ := h.peopleRepo.GetChatUsers(c.Request().Context(), chat.ID)
@@ -105,6 +98,7 @@ func (h *Handler) AddMessage(c echo.Context) error {
 					log.Println(people)
 					return echo.ErrInternalServerError
 				}
+				h.peopleRepo.AddNewMessages(c.Request().Context(), chat.ID, userId)
 				return c.JSON(http.StatusOK, message)
 			}
 		}
