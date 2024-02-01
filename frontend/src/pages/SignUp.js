@@ -13,19 +13,14 @@ function SignUp() {
 <div className={style.container}>
 	<div className={style.screen}>
 		<div className={style.screen__content}>
-      		<div className={style.flex_vertical}>
-        		<div className='empty'></div>
-        		<div className={style.flex_horizontal}>
-          			<div className='empty'></div>
-            		<img src={image} alt="Avatar" className={style.icon}/>
-          			<div className='empty'></div>
-        		</div>
-        		<div className='empty'><span className={style.title}>Sign Up</span></div>
+		<div className={style.logo_container}>
+            	<img src={image} alt="Avatar" className={style.icon}/>
+				<div className={style.title}>SignUp</div>
       		</div>
 			<form className={style.login}>
 				<div className={style.flex_horizontal}>
-				<Field placeholder={"First name"} type={"text"} image={nameImage} id={"firstName"}></Field>
-				<Field placeholder={"Last name"} type={"text"} image={nameImage} id={"lastName"}></Field>
+					<Field placeholder={"First name"} type={"text"} image={nameImage} id={"firstName"}></Field>
+					<Field placeholder={"Last name"} type={"text"} image={nameImage} id={"lastName"}></Field>
         		</div>
 				<Field placeholder={"Phone number"} type={"text"} image={phoneImage} id={"phoneNumber"}></Field>
 				<Field placeholder={"User name"} type={"text"} image={usernameImage}  id={"userName"}></Field>

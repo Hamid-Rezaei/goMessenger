@@ -11,14 +11,9 @@ function Login() {
 <div className={style.container}>
 	<div className={style.screen}>
 		<div className={style.screen__content}>
-      		<div className={style.flex_vertical}>
-        		<div className='empty'></div>
-        		<div className={style.flex_horizontal}>
-          			<div className='empty'></div>
-            		<img src={image} alt="Avatar" className={style.icon}/>
-          			<div className='empty'></div>
-        		</div>
-        		<div className='empty'><span className={style.title}>Login</span></div>
+      		<div className={style.logo_container}>
+            	<img src={image} alt="Avatar" className={style.icon}/>
+				<div className={style.title}>Login</div>
       		</div>
 			<form className={style.login}>
 				<Field placeholder={"User name"} type={"text"} image={usernameImage}  id={"userName"}></Field>
