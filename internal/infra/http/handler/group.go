@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/Hamid-Rezaei/goMessenger/internal/domain/model"
 	"github.com/Hamid-Rezaei/goMessenger/internal/infra/http/request"
-	"github.com/Hamid-Rezaei/goMessenger/internal/infra/http/response"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 	"log"
@@ -44,32 +43,15 @@ func (h *Handler) AddGroup(c echo.Context) error {
 	}
 
 	var group model.Group
-	res, err := h.chatRepo.Create(c.Request().Context(), chat)
+	group.Members = members
+	group.Owner = owner
+	g, err := h.groupRepo.Create(c.Request().Context(), group)
 	if err != nil {
+		log.Printf("%v\n", err)
 		return echo.ErrInternalServerError
 	}
 
-	var people1 model.People
-	people1.ChatID = res.ID
-	people1.UserID = userId
-	var people2 model.People
-	people2.ChatID = res.ID
-	people2.UserID = r.ReceiverId
-
-	_, err2 := h.peopleRepo.Create(c.Request().Context(), people1)
-	if err2 != nil {
-		return echo.ErrInternalServerError
-	}
-	_, err3 := h.peopleRepo.Create(c.Request().Context(), people2)
-	if err3 != nil {
-		return echo.ErrInternalServerError
-	}
-
-	if err != nil {
-		return echo.ErrInternalServerError
-	}
-	return c.JSON(201, response.NewChatResponse(res))
-
+	return c.JSON(http.StatusCreated, g.ID)
 }
 
 func (h *Handler) DeleteGroup(c echo.Context) error {
