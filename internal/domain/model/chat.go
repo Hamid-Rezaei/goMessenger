@@ -10,6 +10,7 @@ type Chat struct {
 }
 
 type People struct {
-	ChatID uint `gorm:"primarykey:ChatId"`
-	UserID uint `gorm:"primarykey:UserId"`
+	ChatID      uint `gorm:"primarykey:ChatId"`
+	UserID      uint `gorm:"primarykey:UserId"`
+	NewMessages uint `json:"new_messages"`
 }
