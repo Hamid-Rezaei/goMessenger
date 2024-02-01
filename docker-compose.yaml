@@ -1,0 +1,45 @@
+version: '3.7'
+
+x-environment: &app-env
+  DB_DRIVER: ${DB_DRIVER}
+  DB_HOST: ${POSTGRES_HOST}
+  DB_PORT: ${DB_PORT}
+  DB_USERNAME: ${DB_USERNAME}
+  DB_PASSWORD: ${DB_PASSWORD}
+  DB: ${DB}
+  JWT_SECRET: ${JWT_SECRET}
+
+services:
+  app:
+    container_name: app
+    environment:
+      <<: *app-env
+    build: .
+    ports:
+      - "8080:8080"
+    restart: always
+    depends_on:
+      - postgres
+    networks:
+      - dockernet
+
+  postgres:
+    image: postgres:12-alpine
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    restart: always
+    volumes:
+      - general_postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+    networks:
+      - dockernet
+
+volumes:
+  general_postgres_data:
+
+networks:
+  dockernet:
+    external: true
