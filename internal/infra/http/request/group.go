@@ -6,8 +6,8 @@ import (
 )
 
 type CreateGroupRequest struct {
-	Name string `json:"name" validate:"required"`
-	//Members
+	Name    string `json:"name" validate:"required"`
+	Members []uint `json:"members"`
 }
 
 func (g CreateGroupRequest) Validate() error {

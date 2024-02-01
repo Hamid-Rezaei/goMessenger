@@ -9,13 +9,12 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"net/http"
-	"time"
 )
 
 func (h *Handler) AddGroup(c echo.Context) error {
 	userId := userIDFromToken(c)
 
-	var r request.CreateChatRequest
+	var r request.CreateGroupRequest
 
 	// Bind Request
 	if err := c.Bind(&r); err != nil {
@@ -27,26 +26,24 @@ func (h *Handler) AddGroup(c echo.Context) error {
 		log.Printf("%v\n", err)
 		return echo.ErrBadRequest
 	}
-	_, err := h.userRepo.GetUserByID(c.Request().Context(), r.ReceiverId)
+
+	owner, err := h.userRepo.GetUserByID(c.Request().Context(), userId)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return c.JSON(http.StatusNotFound, "Receiver Not Found!")
+			return c.JSON(http.StatusNotFound, "owner Not Found!")
 		}
 		return echo.ErrInternalServerError
 	}
 
-	check, err := h.chatRepo.GetChat(c.Request().Context(), userId, r.ReceiverId)
-	log.Println(check)
+	members, err := h.userRepo.GetUsersByID(c.Request().Context(), r.Members)
 	if err != nil {
-		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return echo.ErrInternalServerError
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return c.JSON(http.StatusNotFound, "Member Not Found!")
 		}
+		return echo.ErrInternalServerError
 	}
-	if check != nil {
-		return c.JSON(http.StatusBadRequest, "You Have Chat With This User!")
-	}
-	var chat model.Chat
-	chat.CreatedAt = time.Now()
+
+	var group model.Group
 	res, err := h.chatRepo.Create(c.Request().Context(), chat)
 	if err != nil {
 		return echo.ErrInternalServerError
@@ -72,6 +69,7 @@ func (h *Handler) AddGroup(c echo.Context) error {
 		return echo.ErrInternalServerError
 	}
 	return c.JSON(201, response.NewChatResponse(res))
+
 }
 
 func (h *Handler) DeleteGroup(c echo.Context) error {

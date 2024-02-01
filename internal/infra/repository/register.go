@@ -10,6 +10,7 @@ type UserRepo interface {
 	Create(ctx context.Context, model model.User) (uint, error)
 	GetByUsernamePhone(_ context.Context, username string, phone string) (*model.User, error)
 	GetUserByID(_ context.Context, id uint) (*model.User, error)
+	GetUsersByID(_ context.Context, ids []uint) ([]model.User, error)
 	Update(ctx context.Context, user *model.User, id uint) error
 	Delete(ctx context.Context, id uint) error
 	SearchUser(_ context.Context, keyword string) (*model.User, error)
@@ -48,7 +49,7 @@ type PeopleRepo interface {
 }
 
 type GroupRepo interface {
-	//Create(ctx context.Context, model model.Chat) (*model.Chat, error)
+	Create(ctx context.Context, model model.Group) (*model.Group, error)
 	//GetChatList(ctx context.Context, userId uint) (*[]model.Chat, error)
 	//GetChatById(ctx context.Context, chatId uint) (*model.Chat, error)
 	//GetChat(ctx context.Context, userId uint, receiverId uint) (*model.Chat, error)
