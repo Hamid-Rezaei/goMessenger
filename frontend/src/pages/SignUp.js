@@ -24,7 +24,8 @@ function SignUp() {
 	
     
     const handleSubmit = (e) => {
-    
+
+		let flag = true
         e.preventDefault();
         axios.post("http://localhost:8080/api/users/register", {
 			firstname: userFName,
@@ -33,14 +34,32 @@ function SignUp() {
 			password:password,
 			phone: phoneNumber,
 			bio: bio
-			}).then((response) => {
-				if(response.status == 201){
-					goToLogin()
+			}).catch(function (error) {
+				if (error.response) {
+				  // The request was made and the server responded with a status code
+				  // that falls out of the range of 2xx
+				  console.log(error.response.data);
+				  console.log(error.response.status);
+				  console.log(error.response.headers);
+				} else if (error.request) {
+				  // The request was made but no response was received
+				  // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+				  // http.ClientRequest in node.js
+				  console.log(error.request);
+				} else {
+				  // Something happened in setting up the request that triggered an Error
+				  console.log('Error', error.message);
 				}
-				else{
-					return "z"
-				}
-		  	}); 
+				console.log(error.config);
+				document.getElementById("error").innerText = "invalid creditionals"
+				flag = false
+			  }).then(function (response) {
+				if(flag){
+					if(response.status == 201){
+						goToLogin()
+					}
+			  }
+			})
 
     }
 
@@ -56,6 +75,7 @@ function SignUp() {
 		<div className={style.logo_container}>
             	<img src={image} alt="Avatar" className={style.icon}/>
 				<div className={style.title}>SignUp</div>
+				<p id="error" style={{color : "red"}}></p>
       		</div>
 			<form className={style.login} onSubmit = {handleSubmit}>
 				<div className={style.flex_horizontal}>
