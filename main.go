@@ -32,8 +32,9 @@ func main() {
 	chr := repository.NewChatRepo(dbConnection)
 	mr := repository.NewMessageRepo(dbConnection)
 	pr := repository.NewPeopleRepo(dbConnection)
+	g := repository.NewGroupRepo(dbConnection)
 
-	h := handler.NewHandler(ur, cr, chr, mr, pr)
+	h := handler.NewHandler(ur, cr, chr, mr, pr, g)
 	h.Register(v1)
 
 	// Handle WebSocket connections
