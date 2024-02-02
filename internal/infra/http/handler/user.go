@@ -70,8 +70,7 @@ func (h *Handler) Login(c echo.Context) error {
 	}
 
 	username := r.Username
-	phone := r.Phone
-	user, err := h.userRepo.GetByUsernamePhone(c.Request().Context(), username, phone)
+	user, err := h.userRepo.GetByUsername(c.Request().Context(), username)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}

@@ -2,7 +2,8 @@
 
 
 body {
-	background: #8a93f8;		
+	background: #8a93f8;
+	overflow-y: auto;		
 }
 
 .container {

@@ -18,7 +18,6 @@ type UserRegisterRequest struct {
 type UserLoginRequest struct {
 	Username string `json:"username" validate:"required"`
 	Password string `json:"password" validate:"required"`
-	Phone    string `json:"phone" validate:"required"`
 }
 
 type UserUpdateRequest struct {
