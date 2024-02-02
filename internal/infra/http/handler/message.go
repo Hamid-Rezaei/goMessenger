@@ -90,20 +90,15 @@ func (h *Handler) AddMessage(c echo.Context) error {
 	if people == nil {
 		return c.JSON(http.StatusNotFound, "Chat Not Found!")
 	} else {
-		temp, _ := h.peopleRepo.GetChatUsers(c.Request().Context(), chat.ID)
-		for _, element := range temp {
-			if element != userId {
-				message, err := h.messageRepo.AddMessage(c.Request().Context(), uint(chatId), r.Content, userId, element)
-				if err != nil {
-					log.Println(people)
-					return echo.ErrInternalServerError
-				}
-				h.peopleRepo.AddNewMessages(c.Request().Context(), chat.ID, userId)
-				return c.JSON(http.StatusOK, message)
-			}
+		message, err := h.messageRepo.AddMessage(c.Request().Context(), uint(chatId), r.Content, userId, userId)
+		if err != nil {
+			log.Println(people)
+			return echo.ErrInternalServerError
 		}
-		return c.JSON(http.StatusNotFound, "Chat Not Found!")
+		h.peopleRepo.AddNewMessages(c.Request().Context(), chat.ID, userId)
+		return c.JSON(http.StatusOK, message)
 	}
+	return c.JSON(http.StatusNotFound, "Chat Not Found!")
 }
 
 //func (h *Handler) getNewMessages(c echo.Context) error {

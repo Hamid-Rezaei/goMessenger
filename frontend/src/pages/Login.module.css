@@ -16,7 +16,7 @@ body {
 .screen {		
 	background: linear-gradient(90deg, #5D54A4, #7C78B8);		
 	position: relative;	
-	height: 600px;
+	height: 800px;
 	width: 360px;	
 	box-shadow: 0px 0px 24px #5C5696;
 }
@@ -154,7 +154,7 @@ body {
 }
 
 .icon{
-    width: 40%;
+    width: 35%;
 }
 
 .flex_vertical{
@@ -178,7 +178,7 @@ body {
 .title{
     height: 100%;
     width: 25%;
-    font-size:xx-large;
+    font-size:x-large;
 }
 
 .logo_container{

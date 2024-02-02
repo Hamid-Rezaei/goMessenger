@@ -19,19 +19,41 @@ function Login() {
 
 	const handleSubmit = (e) => {
         e.preventDefault();
+		var flag = true
         axios.post("http://localhost:8080/api/users/login", {
 			username: userName,
 			password:password,
-			}).then((response) => {
-				console.log(response.data)
-				if(response.status == 200){
-					document.cookie = `token=${response.data.token},username=${response.data.username},id=${response.data.Id}`
-					navigate("/");
+			}).catch(function (error) {
+				if (error.response) {
+				  // The request was made and the server responded with a status code
+				  // that falls out of the range of 2xx
+				  console.log(error.response.data);
+				  console.log(error.response.status);
+				  console.log(error.response.headers);
+				} else if (error.request) {
+				  // The request was made but no response was received
+				  // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+				  // http.ClientRequest in node.js
+				  console.log(error.request);
+				} else {
+				  // Something happened in setting up the request that triggered an Error
+				  console.log('Error', error.message);
 				}
-				
-		  	}); 
-
-    }
+				console.log(error.config);
+				document.getElementById("error").innerText = "invalid creditionals"
+				flag = false
+			  }).then(function (response) {
+				if(flag){
+				if(response.status == 200){
+				document.cookie = `token=${response.data.token},username=${response.data.username},id=${response.data.Id}`
+				navigate("/");
+				}
+			  }
+			})
+			
+		}
+			
+    
 
 	const goToSignUp = (e) => {
 		navigate("/signup");
@@ -45,6 +67,7 @@ function Login() {
       		<div className={style.logo_container}>
             	<img src={image} alt="Avatar" className={style.icon}/>
 				<div className={style.title}>Login</div>
+				<p id="error" style={{color : "red"}}></p>
       		</div>
 			<form className={style.login} onSubmit = {handleSubmit}>
 				<Field placeholder={"User name"} type={"text"} image={usernameImage}  id={"userName"} value={userName} setValue={setUserName}></Field>
