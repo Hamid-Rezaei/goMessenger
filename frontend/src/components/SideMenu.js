@@ -8,7 +8,7 @@ function SideMenu({active_item, items}) {
         <ul className={style.items}>
             {items.map((item => 
                 <li className={(active_item == item.name) ? style.item_active:style.item}>
-                    <MenuItem id={item.id} image={item.image}></MenuItem>
+                    <MenuItem id={item.id} image={item.image} key={item.id}></MenuItem>
                 </li>)
             )}
         </ul>

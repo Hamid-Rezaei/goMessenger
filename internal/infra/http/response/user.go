@@ -6,6 +6,7 @@ import (
 )
 
 type UserResponse struct {
+	Id        uint
 	Firstname string `json:"firstname"`
 	Lastname  string `json:"lastname"`
 	Username  string `json:"username"`
@@ -30,6 +31,7 @@ func NewUserResponse(u *model.User) *UserResponse {
 	r.Username = u.Username
 	r.Phone = u.Phone
 	r.Bio = u.Bio
+	r.Id = u.ID
 	//r.Image, _ = u.RetrieveImage(u.Image)
 	r.Token = utils.GenerateJWT(u.ID)
 	return r

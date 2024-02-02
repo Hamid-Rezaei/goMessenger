@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/dgrijalva/jwt-go"
@@ -64,6 +65,7 @@ func JWTWithConfig(config JWTConfig) echo.MiddlewareFunc {
 func jwtFromHeader(header string, authScheme string) jwtExtractor {
 	return func(c echo.Context) (string, error) {
 		auth := c.Request().Header.Get(header)
+		log.Println(auth)
 		l := len(authScheme)
 		if len(auth) > l+1 && auth[:l] == authScheme {
 			return auth[l+1:], nil

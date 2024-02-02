@@ -77,6 +77,7 @@ func (h *Handler) AddChat(c echo.Context) error {
 }
 
 func (h *Handler) GetChatsList(c echo.Context) error {
+	log.Printf("cccc")
 	userId := userIDFromToken(c)
 
 	chats, err := h.chatRepo.GetChatList(c.Request().Context(), userId)

@@ -10,7 +10,7 @@ import Home from './pages/HomePage';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <Home active_item="chats"></Home>
+    <App></App>
   </React.StrictMode>
 );
 
