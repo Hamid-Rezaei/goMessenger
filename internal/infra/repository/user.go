@@ -52,6 +52,19 @@ func (ur *UserRepository) GetUserByID(_ context.Context, id uint) (*model.User, 
 	return &u, nil
 }
 
+func (ur *UserRepository) GetUsersByID(_ context.Context, ids []uint) ([]model.User, error) {
+	var users []model.User
+
+	if err := ur.db.Find(&users, ids).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return users, nil
+}
+
 func (ur *UserRepository) Update(ctx context.Context, user *model.User, id uint) error {
 	tx := ur.db.WithContext(ctx).Begin()
 

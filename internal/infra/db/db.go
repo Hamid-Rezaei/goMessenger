@@ -51,6 +51,7 @@ func AutoMigrate(db *gorm.DB) {
 		new(model.Chat),
 		new(model.Message),
 		new(model.People),
+		new(model.Group),
 	); err != nil {
 		log.Fatalf("failed to run migrations %v", err)
 	}

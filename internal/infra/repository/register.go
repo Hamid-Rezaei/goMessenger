@@ -10,6 +10,7 @@ type UserRepo interface {
 	Create(ctx context.Context, model model.User) (uint, error)
 	GetByUsernamePhone(_ context.Context, username string, phone string) (*model.User, error)
 	GetUserByID(_ context.Context, id uint) (*model.User, error)
+	GetUsersByID(_ context.Context, ids []uint) ([]model.User, error)
 	Update(ctx context.Context, user *model.User, id uint) error
 	Delete(ctx context.Context, id uint) error
 	SearchUser(_ context.Context, keyword string) (*model.User, error)
@@ -45,4 +46,10 @@ type PeopleRepo interface {
 	SetNewMessageToZero(ctx context.Context, chatId uint, userId uint) error
 	AddNewMessages(ctx context.Context, chatId uint, userId uint) error
 	GetNewMessagesCount(_ context.Context, chatId uint, userId uint) (int, error)
+}
+
+type GroupRepo interface {
+	Create(ctx context.Context, model model.Group) (*model.Group, error)
+	GetGroupByOwnerID(ctx context.Context, userId uint, groupId uint) (*model.Group, error)
+	Delete(ctx context.Context, groupId uint) error
 }
