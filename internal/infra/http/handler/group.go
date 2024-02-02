@@ -8,6 +8,7 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func (h *Handler) AddGroup(c echo.Context) error {
@@ -55,13 +56,36 @@ func (h *Handler) AddGroup(c echo.Context) error {
 }
 
 func (h *Handler) DeleteGroup(c echo.Context) error {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		log.Printf("%v\n", err)
+		return echo.ErrBadRequest
+	}
 
+	userID := userIDFromToken(c)
+	g, err := h.groupRepo.GetGroupByOwnerID(c.Request().Context(), userID, uint(id))
+
+	if g == nil {
+		log.Printf("%s", "User does not have permission!")
+		return c.JSON(http.StatusForbidden, "User does not have permission or not found!")
+	}
+	if err != nil {
+		log.Printf("%v\n", err)
+		return echo.ErrInternalServerError
+	}
+
+	if err := h.groupRepo.Delete(c.Request().Context(), uint(int(id))); err != nil {
+		log.Printf("%v\n", err)
+		return echo.ErrInternalServerError
+	}
+
+	return c.JSON(http.StatusOK, "Group Was Deleted Successfully.")
 }
 
-func (h *Handler) AddMember(c echo.Context) error {
-
-}
-
-func (h *Handler) DeleteMember(c echo.Context) error {
-
-}
+//func (h *Handler) AddMember(c echo.Context) error {
+//
+//}
+//
+//func (h *Handler) DeleteMember(c echo.Context) error {
+//
+//}
